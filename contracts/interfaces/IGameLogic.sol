@@ -13,6 +13,6 @@ interface IGameLogic is IDataSchema {
    function checkEqualArray(uint8[] memory _array1,uint8[] memory _array2) external pure returns(bool);
    function getSlice(uint256 _begin,uint256 _end,string memory _text) external pure returns(string memory);
    function getSliceOfBytesArray(uint256 _begin,uint256 _end,bytes memory _bytesArray) external pure returns(bytes memory);
-   function getShipPosition(string memory _position) external pure returns(ShipPosition memory);
+   function getShipPosition(string memory _position) external view returns(ShipPosition memory);
 }
     
