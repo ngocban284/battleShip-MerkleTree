@@ -4,8 +4,11 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/IDataSchema.sol";
 import "./interfaces/IGameLogic.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract Data is IDataSchema{
+contract Data is IDataSchema ,OwnableUpgradeable {
 
     IGameLogic public gameLogic;
     address battleShipContract;
@@ -27,7 +30,7 @@ contract Data is IDataSchema{
     uint rewardComissionRate; // reward comission rate
     uint canncelComissionRate; // canncel comission rate
     address[] public playerAddress; // array of player's address in the game
-    address payable owner; // owner of the contract
+    // address payable owner; // owner of the contract
     address payable transactionOfficer; // transaction officer of the contract
     bool isTest; // is test mode
 
@@ -53,12 +56,6 @@ contract Data is IDataSchema{
     ╚══════════════════════════════╝
     */
 
-
-    modifier onlyOwner {
-        require(msg.sender == owner, "Only the owner can perform this action");
-        _;
-    }
-
     modifier onlyAuthorized {
         bool isBattleShipContract = msg.sender == battleShipContract;
         require(isBattleShipContract || isTest , "Only the battle ship contract can perform this action");
@@ -66,6 +63,53 @@ contract Data is IDataSchema{
     }
 
 
+      /*
+    ╔══════════════════════════════╗
+    
+    ║           CONTRUCTOR         ║
+    
+    ╚══════════════════════════════╝
+    */
+
+    function  initialize(
+        bool _isTest,
+        address _gameLogicAddress,
+        uint _destroyerShipSize,
+        uint _submarineShipSize,
+        uint _cruiserShipSize,
+        uint _battleship,
+        uint _carrier,
+        uint _maxNumberOfMissiles
+    ) external initializer{
+    
+        shipSizes[ShipType.Destroyer] = _destroyerShipSize;
+        shipSizes[ShipType.Submarine] = _submarineShipSize;
+        shipSizes[ShipType.Cruiser] = _cruiserShipSize;
+        shipSizes[ShipType.Battleship] = _battleship;
+        shipSizes[ShipType.Carrier] = _carrier;
+        gameLogic = IGameLogic(_gameLogicAddress);
+        maxNumberOfMissiles = _maxNumberOfMissiles;
+        isTest = _isTest;
+
+        gameModeMapping[GameModeType.Regular] = GameModeDetail(
+            minStakingAmout,
+            GameModeType.Regular,
+            minTimeRequiredForPlayerToRespond
+        );
+
+        gameModeMapping[GameModeType.Intermediate] = GameModeDetail(
+            minStakingAmout,
+            GameModeType.Intermediate,
+            minTimeRequiredForPlayerToRespond
+        );
+
+        gameModeMapping[GameModeType.Professional] = GameModeDetail(
+            minStakingAmout,
+            GameModeType.Professional,
+            minTimeRequiredForPlayerToRespond
+        );
+
+    }
     
 
 }
