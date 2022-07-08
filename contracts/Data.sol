@@ -45,6 +45,27 @@ contract Data is IDataSchema{
     mapping (GameModeType => Lobby) lobbyMapping; // mapping of game mode to lobby
     mapping (GameModeType => GameModeDetail) gameModeMapping; // mapping of game mode to game mode detail
 
+     /*
+    ╔══════════════════════════════╗
+    
+    ║           MODIFIER           ║
+    
+    ╚══════════════════════════════╝
+    */
 
+
+    modifier onlyOwner {
+        require(msg.sender == owner, "Only the owner can perform this action");
+        _;
+    }
+
+    modifier onlyAuthorized {
+        bool isBattleShipContract = msg.sender == battleShipContract;
+        require(isBattleShipContract || isTest , "Only the battle ship contract can perform this action");
+        _;
+    }
+
+
+    
 
 }
