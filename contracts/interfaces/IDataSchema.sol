@@ -43,7 +43,7 @@ interface IDataSchema {
     struct Battle{
         uint staked;    // how much ethers staked for this battle
         uint claimTime;   // when the reward is claimed
-        uint createAt;    // when the battle is created
+        uint createdAt;    // when the battle is created
         uint updatedAt;   // when the battle is updated
         uint startTime;    // when the battle starts
         uint maxTimeForPlayerDelay; // max time player can delay

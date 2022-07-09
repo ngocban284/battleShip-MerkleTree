@@ -19,8 +19,8 @@ interface IData is IDataSchema {
     function setGameLogicContractAddress(address _address) external returns(bool);
     function getGameModeDetails(GameModeType _gameMode) external view returns(GameModeDetail memory);
     function setGameModeDetails(GameModeType _gameMode,GameModeDetail memory _gameModeDetails) external returns(bool);
-    function getLobby() external view returns(Lobby memory);
-    function updateLobby(Lobby memory _lobby) external  returns(bool);
+    function getLobby(GameModeType _gameMode) external view returns(Lobby memory);
+    function updateLobby(GameModeType _gameMode,Lobby memory _lobby) external  returns(bool);
 
 
     // Player
@@ -36,8 +36,8 @@ interface IData is IDataSchema {
     function setRevealedMerkleTree(uint _battleId,address _playerAddress,uint8 _position,bytes32 _revealedPosition) external  returns(bool);
 
     //
-    function getMekleTreeRoot(uint _battleId,address _playerAddress) external view returns(bytes32);
-    function setMekleTreeRoot(uint _battleId,address _playerAddress,bytes32 _root) external returns(bool);
+    function getMerkleTreeRoot(uint _battleId,address _playerAddress) external view returns(bytes32);
+    function setMerkleTreeRoot(uint _battleId,address _playerAddress,bytes32 _root) external returns(bool);
 
     //
     function getLastFiredPosition(uint _battleId,address _playerAddress) external view returns(uint8);
