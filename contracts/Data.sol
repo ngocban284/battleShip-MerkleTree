@@ -34,7 +34,7 @@ contract Data is IDataSchema ,OwnableUpgradeable {
     address payable transactionOfficer; // transaction officer of the contract
     bool isTest; // is test mode
 
-    mapping(ShipType => uint) public shipSizes; // mapping of ship type to ship size
+    mapping(ShipType => uint8) public shipSizes; // mapping of ship type to ship size
     mapping (uint => Battle) battles;  //The mapping of battles
     mapping (address => Player) players;  //The mapping of captains
     mapping (uint => mapping (address => mapping ( uint => bytes32) )) revealedPositions; // mapping of game id to mapping of player address to mapping of position to revealed position
@@ -81,12 +81,12 @@ contract Data is IDataSchema ,OwnableUpgradeable {
     function  initialize(
         bool _isTest,
         address _gameLogicAddress,
-        uint _destroyerShipSize,
-        uint _submarineShipSize,
-        uint _cruiserShipSize,
-        uint _battleship,
-        uint _carrier,
-        uint _maxNumberOfMissiles
+        uint8 _destroyerShipSize,
+        uint8 _submarineShipSize,
+        uint8 _cruiserShipSize,
+        uint8 _battleship,
+        uint8 _carrier,
+        uint8 _maxNumberOfMissiles
     ) external initializer{
     
         shipSizes[ShipType.Destroyer] = _destroyerShipSize;
