@@ -22,9 +22,9 @@ contract GameLogic is IDataSchema{
     mapping (uint8 => ShipType) shipFromIndex; // index to ship
     mapping (string => ShipPosition) shipPositionMapping; // ship positions
     uint8 sumOfShipSizes; // sum of ship sizes
-    uint8 gridDementionX; // grid demention x
-    uint8 gridDementionY; // grid demention y
-    uint8 gridSquareDemention; // grid square demention
+    uint8 gridDimensionX; // grid demention x
+    uint8 gridDimensionY; // grid demention y
+    uint8 gridSquareDimension; // grid square demention
 
 
     /*
@@ -36,8 +36,8 @@ contract GameLogic is IDataSchema{
     */
 
     constructor(
-        uint8 _gridDementionX,
-        uint8 _gridDementionY,
+        uint8 _gridDimentionX,
+        uint8 _gridDimentionY,
         uint8 _sumOfShipSizes,
         uint _destroyerShipSize,
         uint _submarineShipSize,
@@ -45,9 +45,9 @@ contract GameLogic is IDataSchema{
         uint _battleship,
         uint _carrier
     ){
-        gridDementionX = _gridDementionX;
-        gridDementionY = _gridDementionY;
-        gridSquareDemention = _gridDementionX * _gridDementionY;
+        gridDimensionX = _gridDimentionX;
+        gridDimensionY = _gridDimentionY;
+        gridSquareDimension = _gridDimentionX * _gridDimentionY;
         sumOfShipSizes = _sumOfShipSizes;
 
         shipSizes[ShipType.Destroyer] = _destroyerShipSize;
@@ -98,6 +98,51 @@ contract GameLogic is IDataSchema{
         shipPositionMapping["51"] = ShipPosition(ShipType.Carrier, AxisType.X);
         shipPositionMapping["52"] = ShipPosition(ShipType.Carrier, AxisType.X);
        
+    }
+
+
+    /*
+    ╔══════════════════════════════╗
+    
+    ║           FUNCTION           ║
+    
+    ╚══════════════════════════════╝
+    */
+
+    function getPositionOccupiedByShip( ShipType[5] memory _ship, uint8[5] memory _position,AxisType[5] memory _axis) external view returns(uint8[] memory){
+        uint8[] memory combinedShipPositions = new uint8[](sumOfShipSizes);
+        uint8 combinedShipPositionIndex = 0;
+        uint8[] memory locationStatus;
+
+        for (uint8 i = 0; i < _position.length; i++) {
+
+            uint sizeOfShip = shipSizes[_ship[i]];
+            uint8 startingPosition = _position[i];
+            AxisType axis = _axis[i];
+
+            uint8 incrementer = axis == AxisType.X ? 1 : gridDimensionX;
+            uint8 maxTile = uint8(startingPosition + (sizeOfShip - 1) * incrementer);
+
+            require( maxTile < gridSquareDimension, "Ship is out of bounds");
+
+            if ( axis == AxisType.X ) {
+                for (uint8 j = startingPosition; j <= maxTile; j++) {
+                    uint lowerLimitFactor = (startingPosition - (startingPosition % gridDimensionX)) / gridDimensionX;
+                    uint upperLimitFactor = (maxTile - (maxTile % gridDimensionX)) / gridDimensionX;
+                    require (lowerLimitFactor == upperLimitFactor, "Invalid Ship placement");
+                }
+                
+            }
+
+            for (uint8 j = startingPosition; j <= maxTile; j++) {
+                uint8 position = startingPosition + (j * incrementer);
+                require(locationStatus[position] == 0, "Ships can not overlap");
+                locationStatus[position] = 1;
+                combinedShipPositions[combinedShipPositionIndex] = position;
+                combinedShipPositionIndex++;
+            }
+        }
+
     }
     
     
