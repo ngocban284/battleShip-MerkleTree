@@ -86,7 +86,7 @@ contract MerkleProof {
       for(uint8 i = 0; i < 100; i+=5)
       {
         bytes memory proof = proofs[i];
-        leaf = getLeaf(i+1, i+4, leafs);
+        leaf = getSlice(i+1, i+4, leafs);
         
         bool result = checkProofOrdered(proof, root, leaf,  i+1);
         if(!result) {
@@ -97,7 +97,7 @@ contract MerkleProof {
       return valid;
   }
 
-  function getLeaf(uint256 begin, uint256 end, string memory text) public pure returns (string memory) {
+  function getSlice(uint8 begin, uint8 end, string memory text) public pure returns (string memory) {
         bytes memory a = new bytes(end-begin+1);
         for(uint i=0;i<=end-begin;i++){
             a[i] = bytes(text)[i+begin-1];

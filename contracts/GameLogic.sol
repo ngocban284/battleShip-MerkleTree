@@ -7,7 +7,9 @@ import "./lib/merkleTree/MerkleProof.sol";
 import "./interfaces/IDataSchema.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract GameLogic is IDataSchema{
+contract GameLogic is IDataSchema , MerkleProof{
+
+   
 
     /*
     ╔══════════════════════════════╗
@@ -18,7 +20,7 @@ contract GameLogic is IDataSchema{
     */
 
     mapping (ShipType => uint) shipSizes; //ship size 
-    mapping (ShipType => uint[]) shipIndexes; // indexes of ships in the array
+    mapping (ShipType => uint8[]) shipIndexes; // indexes of ships in the array
     mapping (uint8 => ShipType) shipFromIndex; // index to ship
     mapping (string => ShipPosition) shipPositionMapping; // ship positions
     uint8 sumOfShipSizes; // sum of ship sizes
@@ -144,6 +146,87 @@ contract GameLogic is IDataSchema{
         }
 
     }
+
+
+    function getShipTypeByIndex(uint8 _index) external view returns(ShipType){
+        if (  _index < 1 || _index > 16) {
+            return ShipType.None;
+        }
+        return shipFromIndex[_index];
+    }
     
-    
+    function getShipIndexFromShipType(ShipType _shipType) external view returns(uint8[] memory){
+        return shipIndexes[_shipType];
+    }
+
+     
+    function getOrderedPositionAndAxis(string memory _position) external view returns(uint16[] memory,AxisType[5] memory){
+        
+        AxisType [5] memory axis = [ AxisType.None, AxisType.None, AxisType.None, AxisType.None, AxisType.None ];
+        uint16[] memory orderedPositions = new uint16[](17);
+
+        uint8 destroyerCount = 0;
+        uint8 submarineCount = 2;
+        uint8 cruiserCount = 5;
+        uint8 battleshipCount = 8;
+        uint8 carrierCount = 12;
+
+        ShipPosition memory shipPosition = ShipPosition(ShipType.None, AxisType.None);
+        string memory shipPositionKey = "";
+
+
+        for (uint8 i = 0; i < 400; i += 4) {
+            shipPositionKey = getSlice(i+1,i+2,_position);
+            shipPosition = shipPositionMapping[shipPositionKey];
+           
+
+            //Destroyer
+            if (shipPosition.ship == ShipType.Destroyer) {
+                if ( axis[0] == AxisType.None ) {
+                    axis[0] = shipPosition.axis;
+                }
+                orderedPositions[destroyerCount] = i/4 + 1;
+                destroyerCount++;
+            }
+
+            //Shubmarine
+            if (shipPosition.ship == ShipType.Submarine) {
+                if ( axis[1] == AxisType.None ) {
+                    axis[1] = shipPosition.axis;
+                }
+                orderedPositions[submarineCount] = i/4 + 1;
+                submarineCount++;
+            }
+
+
+            //Cruiser
+            if (shipPosition.ship == ShipType.Cruiser) {
+                if ( axis[2] == AxisType.None ) {
+                    axis[2] = shipPosition.axis;
+                }
+                orderedPositions[cruiserCount] = i/4 + 1;
+                cruiserCount++;
+            }
+
+            //Battleship
+            if (shipPosition.ship == ShipType.Battleship) {
+                if ( axis[3] == AxisType.None ) {
+                    axis[3] = shipPosition.axis;
+                }
+                orderedPositions[battleshipCount] = i/4 + 1;
+                battleshipCount++;
+            }
+
+            //Carrier
+            if (shipPosition.ship == ShipType.Carrier) {
+                if ( axis[4] == AxisType.None ) {
+                    axis[4] = shipPosition.axis;
+                }
+                orderedPositions[carrierCount] = i/4 + 1;
+                carrierCount++;
+            }
+        }
+
+        return (orderedPositions, axis);
+    }
 }
