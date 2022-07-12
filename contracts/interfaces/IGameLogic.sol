@@ -11,6 +11,7 @@ interface IGameLogic is IDataSchema {
    function getShipIndexFromShipType(ShipType _shipType) external view returns(uint8[] memory);
    function getOrderedPositionAndAxis(string memory _position) external view returns(uint16[] memory,AxisType[5] memory);
    function checkEqualArray(uint8[] memory _array1,uint8[] memory _array2) external pure returns(bool);
+   function stringToBytes32(string memory source) external pure returns (bytes32 result);
    function getSlice(uint256 _begin,uint256 _end,string memory _text) external pure returns(string memory);
    function getSliceOfBytesArray(uint256 _begin,uint256 _end,bytes memory _bytesArray) external pure returns(bytes memory);
    function getShipPosition(string memory _position) external view returns(ShipPosition memory);

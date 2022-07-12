@@ -7,7 +7,7 @@ import "./lib/merkleTree/MerkleProof.sol";
 import "./interfaces/IDataSchema.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract GameLogic is IDataSchema , MerkleProof{
+contract GameLogic is IDataSchema {
 
    
 
@@ -229,4 +229,80 @@ contract GameLogic is IDataSchema , MerkleProof{
 
         return (orderedPositions, axis);
     }
+
+    function checkEqualArray(uint8[] memory _array1,uint8[] memory _array2) external pure returns(bool){
+        if ( _array1.length != _array2.length ) {
+            return false;
+        }
+        for (uint8 i = 0; i < _array1.length; i++) {
+            if ( _array1[i] != _array2[i] ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function stringToBytes32(string memory source) external pure returns (bytes32 result){
+        bytes memory emptyBytes =  bytes(source);
+
+        if (emptyBytes.length == 0) {
+            return 0x0;
+        }
+        
+        assembly {
+            result := mload(add(source,32))
+        }
+            
+    }
+
+    function bytes32ToString(bytes32 source) external pure returns (string memory result){
+        if (source == 0x0) {
+            return "";
+        }
+        assembly {
+            result := mload(source)
+        }
+    }
+
+    function getbytes32FromBytes(bytes memory _bytes,uint index) public pure returns (bytes32 ){
+        bytes32 el;
+        uint position = (index+1) * 32;
+
+        require( position <= _bytes.length, "The value requested is not within the range of the bytes");
+
+        assembly {
+            el := mload(add(_bytes,position))
+        }
+
+        return el;
+    }
+
+    
+    function getSliceOfBytesArray(uint256 _begin,uint256 _end,bytes memory _bytesArray) external pure returns(bytes memory){
+        bytes memory result = new bytes(_end - _begin + 1);
+   
+        uint position = (_end + 1) * 32;
+
+        require( position <= _bytesArray.length, "The value requested is not within the range of the bytes");
+
+       
+        for (uint256 i = 0; i <= _end - _begin; i++) {
+            result[i] = _bytesArray[ i + _begin -1];
+        }
+        
+        return result;
+    }
+
+    function getSlice(uint256 begin, uint256 end, string memory text) public pure returns (string memory) {
+        bytes memory a = new bytes(end-begin+1);
+        for(uint i=0;i<=end-begin;i++){
+            a[i] = bytes(text)[i+begin-1];
+        }
+        return string(a);
+    }
+
+    function getShipPosition(string memory _position) external view returns(ShipPosition memory){
+        return shipPositionMapping[_position];
+    }
+
 }
